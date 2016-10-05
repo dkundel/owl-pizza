@@ -8,7 +8,7 @@
 
 <ion-content class="grey-bg">
   <p class="center">
-    <img class="text-center" src="https://www.twilio.com/marketing/bundles/archetype/img/logo-wordmark--red.svg">
+    <img class="app-logo" src="assets/pizza-logo.svg">
   </p>
   <ion-card class="title-card">
     <img src="assets/pizza-header.jpg">
@@ -32,10 +32,10 @@
   <ion-card>
     <ion-card-header>I want to be notified via...</ion-card-header>
     <ion-list>
-      <ion-item>
+      <ion-item *ngIf="pushAvailable">
         <ion-icon name="notifications" item-left></ion-icon>
         Push Notification
-        <button ion-button outline item-right>Activate</button>
+        <button ion-button outline item-right>{{ hasPushPermission ? 'Active' : 'Activate' }}</button>
       </ion-item>
       <ion-item>
         <ion-icon name="text" item-left></ion-icon>
@@ -43,8 +43,9 @@
         <button ion-button outline item-right (click)="showPhoneSetup()">Setup</button>
       </ion-item>
       <ion-item>
-        FB Messenger
-        <button ion-button outline item-right>Setup</button>
+        <ion-icon name="logo-facebook" item-left></ion-icon>
+        Messenger
+        <button ion-button outline item-right (click)="showFacebookSetup()">Setup</button>
       </ion-item>
     </ion-list>
   </ion-card>
