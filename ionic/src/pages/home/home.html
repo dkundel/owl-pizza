@@ -1,0 +1,51 @@
+<!--<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Twilio Pizza
+    </ion-title>
+  </ion-navbar>
+</ion-header>-->
+
+<ion-content class="grey-bg">
+  <p class="center">
+    <img class="text-center" src="https://www.twilio.com/marketing/bundles/archetype/img/logo-wordmark--red.svg">
+  </p>
+  <ion-card class="title-card">
+    <img src="assets/pizza-header.jpg">
+    <div class="card-title">Your Pizza Choice</div>
+    <div class="card-subtitle">Select the pizza you want to be notfied for.</div>
+    <ion-list>
+      <ion-item>
+        <ion-label>Mozarella</ion-label>
+        <ion-checkbox></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Pepperoni</ion-label>
+        <ion-checkbox></ion-checkbox>
+      </ion-item>
+      <ion-item>
+        <ion-label>Mushrooms</ion-label>
+        <ion-checkbox></ion-checkbox>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>I want to be notified via...</ion-card-header>
+    <ion-list>
+      <ion-item>
+        <ion-icon name="notifications" item-left></ion-icon>
+        Push Notification
+        <button ion-button outline item-right>Activate</button>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="text" item-left></ion-icon>
+        Text Message
+        <button ion-button outline item-right (click)="showPhoneSetup()">Setup</button>
+      </ion-item>
+      <ion-item>
+        FB Messenger
+        <button ion-button outline item-right>Setup</button>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+</ion-content>
