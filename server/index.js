@@ -18,7 +18,8 @@ function registerBinding(endpoint, identity, bindingType, address, tags) {
     endpoint,
     identity,
     bindingType,
-    address
+    address,
+    tags
   });
 }
 
