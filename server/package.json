@@ -1,0 +1,23 @@
+{
+  "name": "owl-pizza",
+  "version": "1.0.0",
+  "description": "Server for Owl Pizza Notify demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dkundel/owl-pizza.git"
+  },
+  "keywords": [
+    "notify",
+    "twilio"
+  ],
+  "author": "Dominik Kundel <dominik.kundel@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dkundel/owl-pizza/issues"
+  },
+  "homepage": "https://github.com/dkundel/owl-pizza#readme"
+}
