@@ -13,13 +13,14 @@ const client = new Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUT
 const notifyService = client.notify.v1.services(process.env.TWILIO_NOTIFICATION_SERVICE_SID);
 
 function registerBinding(endpoint, identity, bindingType, address, tags) {
-  console.log(arguments);
+  // console.log(arguments);
+  console.log(tags);
   return notifyService.bindings.create({
     endpoint,
     identity,
     bindingType,
     address,
-    tags
+    tag: tags
   });
 }
 
@@ -33,7 +34,7 @@ app.post('/register/push', (req, res, next) => {
   let address = req.body.address;
   let type = req.body.type;
   registerBinding(endpoint, identity, type, address, tags)
-    .then(() => {
+    .then((resp) => {
       res.status(200).send();
     })
     .catch(err => {

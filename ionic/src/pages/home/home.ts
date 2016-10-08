@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Http } from '@angular/http';
 
-import { OnInit, OnDestroy } from '@angular/core';
+import 'rxjs/add/operator/toPromise';
 import { NavController, AlertController, Platform, ToastController } from 'ionic-angular';
-import { Push, PushNotification } from 'ionic-native';
+import { Push, PushNotification, Device, Keyboard } from 'ionic-native';
+
+import { Configuration } from '../../app/config';
 
 @Component({
   selector: 'page-home',
@@ -12,36 +15,52 @@ export class HomePage implements OnInit, OnDestroy {
 
   public hasPushPermission = false;
   public pushAvailable = false;
+  public showChoices = false;
+  public showNotifyOptions = false;
+  public identity = '';
+  public mozzarella = false;
+  public pepperoni = false;
+  public mushrooms = false;
 
   private push: PushNotification;
+  private identifier: string;
 
   constructor(
     public navCtrl: NavController, 
     public platform: Platform,
     private alertCtrl: AlertController, 
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private http: Http
   ) {
     
   }
 
   ngOnInit() {
     this.pushAvailable = this.platform.is('ios') || this.platform.is('android');
-    Push.hasPermission().then(({isEnabled}) => {
-      this.hasPushPermission = isEnabled;
-      if (this.hasPushPermission) {
-        this.initializePush();
-      }
-    });
+    if (Device.device && Device.device.uuid) {
+      this.identifier = Device.device.uuid;
+    }
+
+    if (this.pushAvailable) {
+      Push.hasPermission().then(({isEnabled}) => {
+        this.hasPushPermission = isEnabled;
+        if (this.hasPushPermission) {
+          this.initializePush();
+        }
+      });
+    }
   }
 
   ngOnDestroy() {
-    if (this.push) {
-      this.push.unregister(() => {
-        console.log('Unregistered');
-      }, () => {
-        console.error('Oh no. Something failed.');
-      });
-    }
+  }
+
+  changeIdentity(newValue: string) {
+    this.identity = newValue;
+    this.showChoices = this.identity.length !== 0;
+  }
+
+  changeChoices() {
+    this.showNotifyOptions = this.mozzarella || this.pepperoni || this.mushrooms;
   }
 
   showPhoneSetup() {
@@ -61,12 +80,14 @@ export class HomePage implements OnInit, OnDestroy {
           role: 'cancel',
           handler: data => {
             console.log('Canceled');
+            Keyboard.close();
           }
         },
         {
           text: 'Setup',
           handler: data => {
             this.handlePhoneNumber(data);
+            Keyboard.close();
           }
         }
       ]
@@ -91,12 +112,14 @@ export class HomePage implements OnInit, OnDestroy {
           role: 'cancel',
           handler: data => {
             console.log('Canceled');
+            Keyboard.close();
           }
         },
         {
           text: 'Setup',
           handler: data => {
             this.handleFacebook(data);
+            Keyboard.close();
           }
         }
       ]
@@ -107,47 +130,91 @@ export class HomePage implements OnInit, OnDestroy {
 
   initializePush() {
     if (this.pushAvailable) {
-      this.push = Push.init({
-
-      });
-
-      this.registerHandlers();
+      let push = Push.init(Configuration.pushCredentials);
+      this.registerHandlers(push);
     }
   }
 
   private handleFacebook({ fbName }) {
     if (fbName) {
-      console.log(fbName);
-      let msg = `We will send you a message to "${fbName}" as soon as a pizza is available.`
-      this.showMessage(msg);
+      this.http.post(`${Configuration.registrationServer}/register/fb`, {
+        username: fbName,
+        identity: this.identity,
+        tags: this.getTags()
+      }).toPromise().then(() => {
+        let msg = `We will send you a message to "${fbName}" as soon as a pizza is available.`
+        this.showMessage(msg);
+      }).catch(err => {
+        this.showMessage(err.message);
+      });
     }
   }
 
   private handlePhoneNumber({ phoneNumber }) {
     if (phoneNumber) {
-      console.log(phoneNumber);
-      let msg = `We will send you an SMS to "${phoneNumber}" as soon as a pizza is ready.`
-      this.showMessage(msg);
+      this.http.post(`${Configuration.registrationServer}/register/sms`, {
+        number: phoneNumber,
+        identity: this.identity,
+        tags: this.getTags()
+      }).toPromise().then(() => {
+        let msg = `We will send you an SMS to "${phoneNumber}" as soon as a pizza is ready.`
+        this.showMessage(msg);
+      }).catch(err => {
+        this.showMessage(err.message);
+      });
     }
   }
 
-  private showMessage(msg) {
+  private registerHandlers(push) {
+    push.on('registration', response => {
+      this.http.post(`${Configuration.registrationServer}/register/push`, {
+        address: response.registrationId,
+        identity: this.identity,
+        tags: this.getTags(),
+        uuid: this.identifier,
+        type: this.getPushServiceName()
+      }).toPromise().then(() => {
+        this.showMessage(`You have been registered for push notifications!`);
+      }).catch(err => {
+        this.showMessage(err.message);
+      });
+    });
+
+    push.on('notification', response => {
+      this.showMessage(response, true);
+    });
+
+    push.on('error', err => {
+      this.showMessage(err.message, true);
+    });
+  }
+
+  private showMessage(msg, showClose = false) {
     let toast = this.toastCtrl.create({
       message: msg,
       duration: 3000,
-      position: 'bottom'
+      position: 'bottom',
+      showCloseButton: showClose,
+      closeButtonText: 'OK'
     });
 
     toast.present();
   }
 
-  private registerHandlers() {
-    this.push.on('registration', response => {
+  private getTags() {
+    let tags = ['mozzarella', 'pepperoni', 'mushrooms'];
+    return tags.filter(tag => !!this[tag]);
+  }
 
-    });
+  private getPushServiceName() {
+    if (this.platform.is('ios')) {
+      return 'apn';
+    }
 
-    this.push.on('notification', response => {
+    if (this.platform.is('android')) {
+      return 'gcm';
+    }
 
-    });
+    return undefined;
   }
 }

@@ -10,32 +10,41 @@
   <p class="center">
     <img class="app-logo" src="assets/pizza-logo.svg">
   </p>
-  <ion-card class="title-card">
+  <ion-card>
+    <ion-card-header>Select a Username</ion-card-header>
+    <ion-list>
+      <ion-item>
+        <ion-label>Username</ion-label>
+        <ion-input type="text" [ngModel]="identity" (ngModelChange)="changeIdentity($event)"></ion-input>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <ion-card class="title-card" *ngIf="showChoices">
     <img src="assets/pizza-header.jpg">
     <div class="card-title">Your Pizza Choice</div>
     <div class="card-subtitle">Select the pizza you want to be notfied for.</div>
     <ion-list>
       <ion-item>
-        <ion-label>Mozarella</ion-label>
-        <ion-checkbox></ion-checkbox>
+        <ion-label>Mozzarella</ion-label>
+        <ion-checkbox [(ngModel)]="mozzarella" (ngModelChange)="changeChoices()"></ion-checkbox>
       </ion-item>
       <ion-item>
         <ion-label>Pepperoni</ion-label>
-        <ion-checkbox></ion-checkbox>
+        <ion-checkbox [(ngModel)]="pepperoni" (ngModelChange)="changeChoices()"></ion-checkbox>
       </ion-item>
       <ion-item>
         <ion-label>Mushrooms</ion-label>
-        <ion-checkbox></ion-checkbox>
+        <ion-checkbox [(ngModel)]="mushrooms" (ngModelChange)="changeChoices()"></ion-checkbox>
       </ion-item>
     </ion-list>
   </ion-card>
-  <ion-card>
+  <ion-card *ngIf="showNotifyOptions">
     <ion-card-header>I want to be notified via...</ion-card-header>
     <ion-list>
       <ion-item *ngIf="pushAvailable">
         <ion-icon name="notifications" item-left></ion-icon>
         Push Notification
-        <button ion-button outline item-right>{{ hasPushPermission ? 'Active' : 'Activate' }}</button>
+        <button ion-button outline item-right (click)="initializePush()">{{ hasPushPermission ? 'Active' : 'Activate' }}</button>
       </ion-item>
       <ion-item>
         <ion-icon name="text" item-left></ion-icon>
