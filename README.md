@@ -1,6 +1,6 @@
 # Owl Pizza
 
-![](ionic/src/assets/pizza-logo.svg)
+![](https://rawgithub.com/dkundel/owl-pizza/master/ionic/src/assets/pizza-logo.svg)
 
 ## About
 
