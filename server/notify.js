@@ -10,16 +10,17 @@ const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUT
 // Create a reference to the user notification service
 const service = client.notify.v1.services(process.env.TWILIO_NOTIFICATION_SERVICE_SID);
 
+let message = 'We have new delicious mozzarella pizza!';
+let title = 'Pizza Time!';
+
 // Send a notification 
 service.notifications.create({
   'tag':'mozzarella',
-  'body':'Your delicious mozzarella pizza is ready to pick up!'
+  'title': title,
+  'body': message,
+  'gcm': JSON.stringify({ data: { title: title, message: message}})
 }).then(function(response) {
-  console.log(response);
+  console.log('Notified!');
 }).catch(function(error) {
   console.log(error);
 });
-
-// service.bindings.list().then(function (response) {
-//   console.log(response);
-// });
