@@ -31,7 +31,6 @@ export class HomePage implements OnInit, OnDestroy {
     private toastCtrl: ToastController,
     private http: Http
   ) {
-    
   }
 
   ngOnInit() {
@@ -121,17 +120,19 @@ export class HomePage implements OnInit, OnDestroy {
 
   private registerHandlers(push) {
     push.on('registration', response => {
-      this.http.post(`${Configuration.registrationServer}/register/push`, {
-        address: response.registrationId,
-        identity: this.identity,
-        tags: this.getTags(),
-        uuid: this.identifier,
-        type: this.getPushServiceName()
-      }).toPromise().then(() => {
-        this.showMessage(`You have been registered for push notifications!`);
-      }).catch(err => {
-        this.showMessage(err.message);
-      });
+      if (this.identity) {
+        this.http.post(`${Configuration.registrationServer}/register/push`, {
+          address: response.registrationId,
+          identity: this.identity,
+          tags: this.getTags(),
+          uuid: this.identifier,
+          type: this.getPushServiceName()
+        }).toPromise().then(() => {
+          this.showMessage(`You have been registered for push notifications!`);
+        }).catch(err => {
+          this.showMessage(err.message);
+        });
+      }
     });
 
     push.on('notification', response => {
