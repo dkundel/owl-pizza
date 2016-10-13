@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import { NavController, AlertController, Platform, ToastController } from 'ionic-angular';
-import { Push, PushNotification, Device, Keyboard } from 'ionic-native';
+import { Push, Device, Keyboard } from 'ionic-native';
 
 import { Configuration } from '../../app/config';
 
@@ -22,7 +22,6 @@ export class HomePage implements OnInit, OnDestroy {
   public pepperoni = false;
   public mushrooms = false;
 
-  private push: PushNotification;
   private identifier: string;
 
   constructor(
@@ -36,19 +35,21 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.pushAvailable = this.platform.is('ios') || this.platform.is('android');
-    if (Device.device && Device.device.uuid) {
-      this.identifier = Device.device.uuid;
-    }
+    this.platform.ready().then(() => {
+      this.pushAvailable = this.platform.is('ios') || this.platform.is('android');
+      if (Device.device && Device.device.uuid) {
+        this.identifier = Device.device.uuid;
+      }
 
-    if (this.pushAvailable) {
-      Push.hasPermission().then(({isEnabled}) => {
-        this.hasPushPermission = isEnabled;
-        if (this.hasPushPermission) {
-          this.initializePush();
-        }
-      });
-    }
+      if (this.pushAvailable) {
+        Push.hasPermission().then(({isEnabled}) => {
+          this.hasPushPermission = isEnabled;
+          if (this.hasPushPermission) {
+            this.initializePush();
+          }
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -96,57 +97,10 @@ export class HomePage implements OnInit, OnDestroy {
     prompt.present();
   }
 
-  showFacebookSetup() {
-    let prompt = this.alertCtrl.create({
-      title: 'Facebook Messenger Configuration',
-      message: 'Please specify your Facebook Messenger username.',
-      inputs: [
-        {
-          placeholder: 'yourFacebookUsername',
-          name: 'fbName'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: data => {
-            console.log('Canceled');
-            Keyboard.close();
-          }
-        },
-        {
-          text: 'Setup',
-          handler: data => {
-            this.handleFacebook(data);
-            Keyboard.close();
-          }
-        }
-      ]
-    });
-
-    prompt.present();
-  }
-
   initializePush() {
     if (this.pushAvailable) {
       let push = Push.init(Configuration.pushCredentials);
       this.registerHandlers(push);
-    }
-  }
-
-  private handleFacebook({ fbName }) {
-    if (fbName) {
-      this.http.post(`${Configuration.registrationServer}/register/fb`, {
-        username: fbName,
-        identity: this.identity,
-        tags: this.getTags()
-      }).toPromise().then(() => {
-        let msg = `We will send you a message to "${fbName}" as soon as a pizza is available.`
-        this.showMessage(msg);
-      }).catch(err => {
-        this.showMessage(err.message);
-      });
     }
   }
 
@@ -181,7 +135,8 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     push.on('notification', response => {
-      this.showMessage(response, true);
+      let message = response.message || response.additionalData.twi_body;
+      this.showMessage(message, true);
     });
 
     push.on('error', err => {
