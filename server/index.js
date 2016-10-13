@@ -11,18 +11,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 // The Twilio dependencies
-const client = new Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const notifyService = client.notify.v1.services(process.env.TWILIO_NOTIFICATION_SERVICE_SID);
 
 // Creates a Twilio Notify binding. Essentially an endpoint that a message can be sent to
 function registerBinding(endpoint, identity, bindingType, address, tags) {
-  return notifyService.bindings.create({
-    endpoint,
-    identity,
-    bindingType,
-    address,
-    tag: tags
-  });
 }
 
 app.use(bodyParser.urlencoded({extended: false}));
@@ -35,13 +26,7 @@ app.post('/register/push', (req, res, next) => {
   let tags = req.body.tags;
   let address = req.body.address;
   let type = req.body.type;
-  registerBinding(endpoint, identity, type, address, tags)
-    .then((resp) => {
-      res.status(200).send();
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+  res.status(200).send();
 });
 
 // POST endpoint that the Ionic App uses to register a new SMS endpoint (called from iOS, Android or Web)
@@ -50,13 +35,7 @@ app.post('/register/sms', (req, res, next) => {
   let endpoint = `sms:inbox:${identity}`;
   let tags = req.body.tags;
   let number = req.body.number;
-  registerBinding(endpoint, identity, 'sms', number, tags)
-    .then(() => {
-      res.status(200).send();
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+  res.status(200).send();
 });
 
 // POST endpoint that the Twilio Facebook integration is posting to, on every incoming Facebook message to a certain page.
@@ -78,7 +57,7 @@ app.post('/messenger', (req, res, next) => {
     selected.push('secret');
     let address = from.replace('Messenger:', '');
     let endpoint = `fb:inbox:${address}`;
-    registerBinding(endpoint, address, 'facebook-messenger', address, selected);
+    // ?? TODO
   }
 
   client.messages.create({

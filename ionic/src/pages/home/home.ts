@@ -3,7 +3,7 @@ import { Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 import { NavController, AlertController, Platform, ToastController } from 'ionic-angular';
-import { Push, Device, Keyboard } from 'ionic-native';
+import { Device, Keyboard } from 'ionic-native';
 
 import { Configuration } from '../../app/config';
 
@@ -41,12 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
 
       if (this.pushAvailable) {
-        Push.hasPermission().then(({isEnabled}) => {
-          this.hasPushPermission = isEnabled;
-          if (this.hasPushPermission) {
-            this.initializePush();
-          }
-        });
+        // ??? TODO
       }
     });
   }
@@ -97,10 +92,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   initializePush() {
-    if (this.pushAvailable) {
-      let push = Push.init(Configuration.pushCredentials);
-      this.registerHandlers(push);
-    }
   }
 
   private handlePhoneNumber({ phoneNumber }) {
@@ -119,30 +110,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private registerHandlers(push) {
-    push.on('registration', response => {
-      if (this.identity) {
-        this.http.post(`${Configuration.registrationServer}/register/push`, {
-          address: response.registrationId,
-          identity: this.identity,
-          tags: this.getTags(),
-          uuid: this.identifier,
-          type: this.getPushServiceName()
-        }).toPromise().then(() => {
-          this.showMessage(`You have been registered for push notifications!`);
-        }).catch(err => {
-          this.showMessage(err.message);
-        });
-      }
-    });
-
-    push.on('notification', response => {
-      let message = response.message || response.additionalData.twi_body;
-      this.showMessage(message, true);
-    });
-
-    push.on('error', err => {
-      this.showMessage(err.message, true);
-    });
   }
 
   private showMessage(msg, showClose = false) {

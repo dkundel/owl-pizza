@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.twilio.OwlPizza" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.your.appid" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Owl Pizza</name>
     <description>A demo application to show off Twilio Notify </description>
-    <author email="dkundel@twilio.com" href="http://twilio.com/">Dominik Kundel</author>
+    <author email="you@youremail.com" href="http://yourdomain.com/">Developer Hero</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
