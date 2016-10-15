@@ -18,6 +18,11 @@ function registerBinding(endpoint, identity, bindingType, address, tags) {
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // POST endpoint that the Ionic App uses to register a new Push endpoint (iOS or Android)
 app.post('/register/push', (req, res, next) => {
