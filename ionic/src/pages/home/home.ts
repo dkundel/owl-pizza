@@ -136,8 +136,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     push.on('notification', response => {
-      let message = response.message || response.additionalData.twi_body;
-      this.showMessage(message, true);
+      this.showMessage(response.message, true);
     });
 
     push.on('error', err => {

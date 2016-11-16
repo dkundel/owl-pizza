@@ -15,10 +15,9 @@ let title = 'Pizza Time!';
 
 // Send a notification 
 service.notifications.create({
-  'tag':'mozzarella',
+  'tag': 'mozzarella',
   'title': title,
-  'body': message,
-  'gcm': JSON.stringify({ data: { title: title, message: message}})
+  'body': message
 }).then(function(response) {
   console.log('Notified!');
 }).catch(function(error) {

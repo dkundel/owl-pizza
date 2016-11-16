@@ -55,6 +55,7 @@ ngrok http 3000
 1. Navigate in a separate terminal window into the `ionic/` directory and install the dependencies
 ```bash
 cd ionic && npm install
+ionic state restore
 ```
 
 2. Copy the config from the app
