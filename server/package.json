@@ -27,7 +27,7 @@
     "dotenv": "^2.0.0",
     "express": "^4.13.3",
     "jade": "^1.11.0",
-    "twilio": "^3.0.0-rc.13",
+    "twilio": "^4.6.0",
     "snyk": "^1.69.0"
   },
   "snyk": true
